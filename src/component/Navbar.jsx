@@ -200,16 +200,7 @@ const Navbar = () => {
           </nav>
 
           {/* Bottom Section */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 overflow-hidden">
-            {token && (
-              <button
-                onClick={handleLogout}
-                className="w-full py-3 text-center text-white font-medium bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
-              >
-                Logout
-              </button>
-            )}
-          </div>
+          
         </div>
       </div>
     </nav>

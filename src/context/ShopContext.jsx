@@ -112,7 +112,7 @@ const ShopContextProvider = (props) => {
     }
   } catch (error) {
     console.error("Error fetching cart:", error);
-    toast.error("Failed to fetch cart");
+    
   }
 };
 
@@ -126,7 +126,7 @@ const ShopContextProvider = (props) => {
   }
 
   if (product.stock <= 0) {
-    toast.error('This product is out of stock');
+    
     return;
   }
 
@@ -148,7 +148,7 @@ const ShopContextProvider = (props) => {
   setAddToCartLoading(true); // Start loading
 
   // Wait for 1.5 seconds before actually sending request
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
   try {
     const response = await axios.post(
@@ -359,7 +359,7 @@ const ShopContextProvider = (props) => {
       );
 
       if (response.data.success) {
-        toast.success("Item removed from cart");
+       
         setCartItems(prev =>
           prev.filter(
             ci => !(ci.id === itemToRemove.id && ci.size === itemToRemove.size)
