@@ -1,30 +1,33 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { ShopContext } from '../context/ShopContext';
+import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { ShopContext } from "../context/ShopContext";
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart, isInStock, offers } = useContext(ShopContext);
+  const { products, currency, addToCart, isInStock, offers, addToCartLoading } =
+    useContext(ShopContext);
   const [productData, setProductData] = useState(null);
-  const [selectedImage, setSelectedImage] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedImage, setSelectedImage] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [sizeError, setSizeError] = useState(false);
   const [stockError, setStockError] = useState(false);
 
   useEffect(() => {
     if (products && products.length > 0 && productId) {
-      const foundProduct = products.find(item => 
-        (item._id?.toString() === productId || item.id?.toString() === productId)
+      const foundProduct = products.find(
+        (item) =>
+          item._id?.toString() === productId ||
+          item.id?.toString() === productId
       );
 
       if (foundProduct) {
         setProductData(foundProduct);
-        const firstImage = Array.isArray(foundProduct.image) 
-          ? foundProduct.image[0] 
+        const firstImage = Array.isArray(foundProduct.image)
+          ? foundProduct.image[0]
           : foundProduct.image;
-        setSelectedImage(firstImage || '/placeholder.jpg');
-        
+        setSelectedImage(firstImage || "/placeholder.jpg");
+
         if (foundProduct.sizes?.length > 0) {
           setSelectedSize(foundProduct.sizes[0]);
         }
@@ -32,7 +35,7 @@ const Product = () => {
     }
   }, [productId, products]);
 
-  console.log('Products:', products);
+  console.log("Products:", products);
 
   if (!productId) {
     return (
@@ -46,16 +49,19 @@ const Product = () => {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="text-lg text-gray-600">
-          {products ? 'Product not found' : 'Loading products...'}
+          {products ? "Product not found" : "Loading products..."}
         </div>
       </div>
     );
   }
 
   // Find an active offer for this product
-  const applicableOffer = offers.find((offer) =>
-    (offer.applyToAllProducts ?? false) || 
-    offer.applicableProducts.some((product) => product._id?.toString() === productData._id?.toString())
+  const applicableOffer = offers.find(
+    (offer) =>
+      (offer.applyToAllProducts ?? false) ||
+      offer.applicableProducts.some(
+        (product) => product._id?.toString() === productData._id?.toString()
+      )
   );
 
   // Calculate discounted price if an offer applies
@@ -68,8 +74,8 @@ const Product = () => {
     applicableOffer,
     discountPercent: applicableOffer?.discountPercent,
     discountedPrice,
-    applyToAllProducts: applicableOffer?.applyToAllProducts ?? 'missing',
-    offerProductIds: applicableOffer?.applicableProducts?.map(p => p._id),
+    applyToAllProducts: applicableOffer?.applyToAllProducts ?? "missing",
+    offerProductIds: applicableOffer?.applicableProducts?.map((p) => p._id),
   });
 
   const handleAddToCart = () => {
@@ -91,7 +97,7 @@ const Product = () => {
       name: productData.name,
       price: discountedPrice, // Use discounted price
       imageUrl: selectedImage,
-      size: selectedSize || 'One Size',
+      size: selectedSize || "One Size",
       quantity: quantity,
     };
 
@@ -110,7 +116,7 @@ const Product = () => {
               alt={productData.name}
               className="max-w-full max-h-full object-contain rounded-lg border-2 border-orange-500"
               onError={(e) => {
-                e.target.src = '/placeholder.jpg';
+                e.target.src = "/placeholder.jpg";
               }}
             />
             {applicableOffer && productData.stock > 0 && (
@@ -122,14 +128,17 @@ const Product = () => {
 
           {productData.image?.length > 1 && (
             <div className="flex gap-2 overflow-x-auto py-2">
-              {(Array.isArray(productData.image) ? productData.image : [productData.image]).map((img, index) => (
+              {(Array.isArray(productData.image)
+                ? productData.image
+                : [productData.image]
+              ).map((img, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(img)}
                   className={`rounded-md overflow-hidden border-2 aspect-square flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 transition-all ${
                     selectedImage === img
-                      ? 'border-orange-500 scale-105'
-                      : 'border-transparent hover:border-gray-300'
+                      ? "border-orange-500 scale-105"
+                      : "border-transparent hover:border-gray-300"
                   }`}
                 >
                   <img
@@ -137,7 +146,7 @@ const Product = () => {
                     alt={`${productData.name} thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.target.src = '/placeholder.jpg';
+                      e.target.src = "/placeholder.jpg";
                     }}
                   />
                 </button>
@@ -148,7 +157,9 @@ const Product = () => {
 
         {/* Product Details */}
         <div className="lg:w-1/2 space-y-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{productData.name}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            {productData.name}
+          </h1>
 
           {/* Price and Stock Status */}
           <div className="flex justify-between items-start">
@@ -156,15 +167,18 @@ const Product = () => {
               {applicableOffer && productData.stock > 0 ? (
                 <>
                   <p className="text-2xl font-medium text-gray-600 line-through">
-                    {currency}{productData.price.toFixed(2)}
+                    {currency}
+                    {productData.price.toFixed(2)}
                   </p>
                   <p className="text-2xl font-medium text-green-600">
-                    {currency}{discountedPrice.toFixed(2)}
+                    {currency}
+                    {discountedPrice.toFixed(2)}
                   </p>
                 </>
               ) : (
                 <p className="text-2xl font-medium text-gray-900">
-                  {currency}{productData.price.toFixed(2)}
+                  {currency}
+                  {productData.price.toFixed(2)}
                 </p>
               )}
             </div>
@@ -182,15 +196,17 @@ const Product = () => {
           {/* Size Selection */}
           {productData.sizes?.length > 0 && (
             <div className="pt-2">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">SELECT SIZE</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">
+                SELECT SIZE
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {productData.sizes.map((size, index) => (
                   <button
                     key={index}
                     className={`px-4 py-2 border rounded-md text-sm ${
                       selectedSize === size
-                        ? 'bg-orange-500 text-white'
-                        : 'border-gray-300 hover:border-orange-500'
+                        ? "bg-orange-500 text-white"
+                        : "border-gray-300 hover:border-orange-500"
                     }`}
                     onClick={() => {
                       setSelectedSize(size);
@@ -202,7 +218,9 @@ const Product = () => {
                 ))}
               </div>
               {sizeError && (
-                <p className="text-red-500 text-sm mt-1">Please select a size</p>
+                <p className="text-red-500 text-sm mt-1">
+                  Please select a size
+                </p>
               )}
             </div>
           )}
@@ -218,7 +236,9 @@ const Product = () => {
               >
                 -
               </button>
-              <span className="px-4 py-1 border-x border-gray-300">{quantity}</span>
+              <span className="px-4 py-1 border-x border-gray-300">
+                {quantity}
+              </span>
               <button
                 className="px-3 py-1 text-gray-600 hover:bg-gray-100"
                 onClick={() => setQuantity(quantity + 1)}
@@ -237,20 +257,54 @@ const Product = () => {
           {/* Add to Cart Button */}
           <button
             onClick={handleAddToCart}
-            disabled={productData.stock <= 0}
-            className={`w-full py-3 rounded-md transition-colors mt-4 ${
+            disabled={productData.stock <= 0 || addToCartLoading}
+            className={`w-full py-3 rounded-md transition-colors mt-4 flex items-center justify-center gap-2 ${
               productData.stock > 0
-                ? 'bg-gray-700 text-white hover:bg-orange-400'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ? addToCartLoading
+                  ? "bg-orange-300 text-white cursor-wait"
+                  : "bg-gray-700 text-white hover:bg-orange-400"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
-            {productData.stock > 0 ? 'ADD TO CART' : 'OUT OF STOCK'}
+            {productData.stock > 0 ? (
+              addToCartLoading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 000 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                    ></path>
+                  </svg>
+                  Adding...
+                </>
+              ) : (
+                "ADD TO CART"
+              )
+            ) : (
+              "OUT OF STOCK"
+            )}
           </button>
 
           {/* Product Details */}
           {productData.details && (
             <div className="pt-4 border-t border-gray-100">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">PRODUCT DETAILS</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">
+                PRODUCT DETAILS
+              </h3>
               <ul className="text-sm text-gray-600 space-y-1">
                 {productData.details.map((detail, index) => (
                   <li key={index}>• {detail}</li>
@@ -281,17 +335,17 @@ export default Product;
 
 //   useEffect(() => {
 //     if (products && products.length > 0 && productId) {
-//       const foundProduct = products.find(item => 
+//       const foundProduct = products.find(item =>
 //         (item._id?.toString() === productId || item.id?.toString() === productId)
 //       );
 
 //       if (foundProduct) {
 //         setProductData(foundProduct);
-//         const firstImage = Array.isArray(foundProduct.image) 
-//           ? foundProduct.image[0] 
+//         const firstImage = Array.isArray(foundProduct.image)
+//           ? foundProduct.image[0]
 //           : foundProduct.image;
 //         setSelectedImage(firstImage || '/placeholder.jpg');
-        
+
 //         if (foundProduct.sizes?.length > 0) {
 //           setSelectedSize(foundProduct.sizes[0]);
 //         }
